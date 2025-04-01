@@ -14,6 +14,9 @@ if "selected_transaction" not in st.session_state:
 if "llm_result" not in st.session_state:
     st.session_state.llm_result = ""
 
+# (برای تست موقت، این خط را اضافه کنید تا محتویات st.secrets چاپ شود، سپس آن را کامنت کنید)
+# st.write("Secrets:", st.secrets)
+
 @st.cache_data
 def load_normal_transactions():
     df = pd.read_csv("normal_transactions.csv")
@@ -54,15 +57,32 @@ def analyze_dispute_with_llm(transaction_info):
         "This transaction has been flagged as 'Dispute Transaction'. The customer reported an issue with it."
     )
     
+    # اضافه کردن few-shot examples برای High, Medium, و Low risk
     prompt = f"""
 You are a specialized Fraud Dispute Analysis assistant.
-Below is an example of the correct output format:
 
-Original Dispute Text: I never authorized this purchase of $100 at StoreX.
+Here are some examples:
+
+Example 1 (High Risk):
+Original Dispute Text: I never authorized this purchase of $500 at StoreA.
 Intent Category: Unauthorized/Fraud
 Fraud Risk Score: High
-AI-generated Summary: The customer denies the purchase, indicating potential fraud.
+AI-generated Summary: The transaction is highly suspicious due to the large amount and unfamiliar location.
 Recommendation: Escalate the case to the internal fraud team.
+
+Example 2 (Low Risk):
+Original Dispute Text: I accidentally left my subscription active and got charged $20.
+Intent Category: User Error
+Fraud Risk Score: Low
+AI-generated Summary: The user admits the charge, indicating it is not fraudulent.
+Recommendation: Inform the user about cancellation procedures.
+
+Example 3 (Medium Risk):
+Original Dispute Text: I noticed a charge of $150 at an unfamiliar merchant.
+Intent Category: Unclear
+Fraud Risk Score: Medium
+AI-generated Summary: The transaction has some risk due to the unknown merchant, but the amount is moderate.
+Recommendation: Contact the customer for additional details.
 
 Now, analyze the following disputed transaction details:
 
@@ -70,10 +90,10 @@ Now, analyze the following disputed transaction details:
 
 Tasks:
 1. Display the Original Dispute Text as provided above.
-2. Identify the Intent Category (e.g., 'Unauthorized/Fraud', 'Merchant Error', or 'Unclear').
+2. Identify the Intent Category (e.g., 'Unauthorized/Fraud', 'Merchant Error', 'User Error', or 'Unclear').
 3. Assess the Fraud Risk Score (High, Medium, or Low) with a short explanation.
 4. Generate a concise, analyst-friendly summary.
-5. Provide a recommended action for the fraud analyst (e.g., escalate, refund, contact merchant).
+5. Provide a recommended action for the fraud analyst (e.g., escalate, refund, contact customer, etc.).
 
 IMPORTANT:
 - You MUST strictly follow the output format.
@@ -90,7 +110,7 @@ Recommendation: <...>
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=300,
+            max_tokens=400,
             temperature=0.3
         )
         return response.choices[0].message["content"]
@@ -102,6 +122,7 @@ def show_llm_page():
     tx = st.session_state.selected_transaction
     llm_result = st.session_state.get("llm_result", "")
     
+    # Debug: نمایش خروجی خام مدل (برای تست؛ سپس می‌توانید این خط را کامنت کنید)
     st.write("Debug LLM result (raw):")
     st.write(llm_result)
     
