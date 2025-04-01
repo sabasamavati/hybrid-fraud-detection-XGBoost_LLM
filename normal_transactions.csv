@@ -1,4 +1,3 @@
-%%writefile normal_transactions.csv
 id,amount,merchant,location,time,device,past_spending
 T001,50,Starbucks,Seattle,08:00,Mobile,200
 T002,250,Amazon,Online,12:30,Desktop,500
