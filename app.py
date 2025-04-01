@@ -3,16 +3,19 @@ import pandas as pd
 import openai
 import numpy as np
 
-# Use st.secrets to get the OpenAI API key
+# استفاده از st.secrets برای دریافت کلید API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# Set up st.session_state for page navigation
+# استفاده از st.session_state برای ناوبری بین صفحات
 if "show_llm_page" not in st.session_state:
     st.session_state.show_llm_page = False
 if "selected_transaction" not in st.session_state:
     st.session_state.selected_transaction = {}
 if "llm_result" not in st.session_state:
     st.session_state.llm_result = ""
+
+# (برای تست موقت، این خط را اضافه کنید تا محتویات st.secrets چاپ شود، سپس آن را کامنت کنید)
+# st.write("Secrets:", st.secrets)
 
 @st.cache_data
 def load_normal_transactions():
@@ -42,31 +45,6 @@ def predict_fraud(transaction):
         label = "Not Fraud"
     return label, prob
 
-# A helper function to simulate retrieval of similar past dispute cases (RAG concept)
-def retrieve_similar_cases(transaction_info):
-    # For demonstration, we return three hard-coded examples.
-    similar_cases = [
-        {
-            "case_id": "EX001",
-            "text": "I never authorized a $500 purchase at StoreA.",
-            "risk": "High",
-            "outcome": "Escalated to fraud team"
-        },
-        {
-            "case_id": "EX002",
-            "text": "I accidentally left my subscription active and got charged $20.",
-            "risk": "Low",
-            "outcome": "Informed the customer"
-        },
-        {
-            "case_id": "EX003",
-            "text": "I noticed a charge of $150 at an unfamiliar merchant.",
-            "risk": "Medium",
-            "outcome": "Contacted the customer for clarification"
-        },
-    ]
-    return similar_cases
-
 def analyze_dispute_with_llm(transaction_info):
     dispute_text = (
         f"Transaction ID: {transaction_info['id']}\n"
@@ -79,20 +57,11 @@ def analyze_dispute_with_llm(transaction_info):
         "This transaction has been flagged as 'Dispute Transaction'. The customer reported an issue with it."
     )
     
-    # Retrieve similar cases (simulated RAG)
-    similar_cases = retrieve_similar_cases(transaction_info)
-    retrieved_text = "Retrieved similar cases:\n"
-    for case in similar_cases:
-        retrieved_text += f"- Case {case['case_id']}: \"{case['text']}\" (Risk: {case['risk']}, Outcome: {case['outcome']})\n"
-    
-    # Construct the prompt with few-shot examples and the retrieved cases
+    # اضافه کردن few-shot examples برای High, Medium, و Low risk
     prompt = f"""
 You are a specialized Fraud Dispute Analysis assistant.
-Below are some retrieved similar cases to guide your analysis:
 
-{retrieved_text}
-
-Here are few-shot examples:
+Here are some examples:
 
 Example 1 (High Risk):
 Original Dispute Text: I never authorized this purchase of $500 at StoreA.
@@ -139,7 +108,7 @@ Recommendation: <...>
     """
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # or "gpt-4" if available
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=400,
             temperature=0.3
@@ -153,7 +122,7 @@ def show_llm_page():
     tx = st.session_state.selected_transaction
     llm_result = st.session_state.get("llm_result", "")
     
-    # Debug: Print raw LLM result for testing (remove after verifying)
+    # Debug: نمایش خروجی خام مدل (برای تست؛ سپس می‌توانید این خط را کامنت کنید)
     st.write("Debug LLM result (raw):")
     st.write(llm_result)
     
