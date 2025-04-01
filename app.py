@@ -3,9 +3,6 @@ import pandas as pd
 import openai
 import numpy as np
 
-# بررسی موقت st.secrets برای اطمینان از بارگذاری صحیح (پس از تست، این خط را کامنت یا حذف کنید)
-st.write("Secrets:", st.secrets)
-
 # استفاده از st.secrets برای دریافت کلید API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
