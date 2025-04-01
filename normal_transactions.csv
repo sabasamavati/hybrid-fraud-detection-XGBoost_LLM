@@ -1,0 +1,22 @@
+%%writefile normal_transactions.csv
+id,amount,merchant,location,time,device,past_spending
+T001,50,Starbucks,Seattle,08:00,Mobile,200
+T002,250,Amazon,Online,12:30,Desktop,500
+T003,400,Bank ATM,New York,22:00,ATM,1000
+T004,120,Electronics Hub,LA,19:45,Mobile,300
+T005,180,Clothing Store,Chicago,15:20,Tablet,400
+T006,320,Travel Agency,San Francisco,10:15,Mobile,750
+T007,95,Supermarket,Denver,16:45,Desktop,150
+T008,60,McDonalds,Seattle,09:30,Mobile,100
+T009,210,BestBuy,Online,11:00,Desktop,350
+T010,135,Target,Chicago,13:45,Mobile,220
+T011,290,Costco,Los Angeles,14:30,Desktop,450
+T012,80,Subway,New York,12:00,Mobile,180
+T013,450,CarMax,San Francisco,16:00,Desktop,900
+T014,155,Walmart,Denver,18:20,Mobile,320
+T015,95,Home Depot,Seattle,10:10,Desktop,190
+T016,220,Apple Store,Online,11:15,Mobile,400
+T017,330,Lowes,Los Angeles,20:00,Desktop,600
+T018,110,Amazon,Online,15:30,Mobile,250
+T019,75,Chipotle,Chicago,12:45,Mobile,160
+T020,260,Costco,Denver,19:00,Desktop,500
