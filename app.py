@@ -3,7 +3,10 @@ import pandas as pd
 import openai
 import numpy as np
 
-# تنظیم کلید API OpenAI - کلید واقعی خود را در اینجا وارد کنید.
+# بررسی موقت st.secrets برای اطمینان از بارگذاری صحیح (پس از تست، این خط را کامنت یا حذف کنید)
+st.write("Secrets:", st.secrets)
+
+# استفاده از st.secrets برای دریافت کلید API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # استفاده از st.session_state برای ناوبری بین صفحات
@@ -88,7 +91,7 @@ Recommendation: <...>
     """
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # یا "gpt-4" در صورت دسترسی
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=300,
             temperature=0.3
@@ -102,7 +105,6 @@ def show_llm_page():
     tx = st.session_state.selected_transaction
     llm_result = st.session_state.get("llm_result", "")
     
-    # Debug: نمایش خروجی خام مدل
     st.write("Debug LLM result (raw):")
     st.write(llm_result)
     
